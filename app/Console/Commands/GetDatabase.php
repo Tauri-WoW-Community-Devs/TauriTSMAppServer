@@ -54,6 +54,8 @@ class GetDatabase extends Command
     public function handle()
     {
         $response = $this->tauri->communicate($this->request);
+        //For local purposes
+        // $response = json_decode(Storage::disk('public')->get('response.json'), true);
 
         $generate = new GenerateFileController();
         $generate->__invoke($response);

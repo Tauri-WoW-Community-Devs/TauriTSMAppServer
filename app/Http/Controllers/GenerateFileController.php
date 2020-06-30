@@ -9,15 +9,15 @@ use Illuminate\Support\Facades\Storage;
 class GenerateFileController extends Controller
 {
     /**
-     * Params of the request
+     * Params of the request.
      *
      * @var array
      */
     protected $request = [
         'url'    => 'auctions-data',
         'params' => [
-            "r" => "[HU] Tauri WoW Server"
-        ]
+            'r' => '[HU] Tauri WoW Server',
+        ],
     ];
 
     protected $servers = [
@@ -54,7 +54,7 @@ class GenerateFileController extends Controller
 
             $data = collect($auctions)->map(function ($auction) {
                 //Price per item
-                $auction['buyout'] = $auction['buyout']/$auction['stackCount'];
+                $auction['buyout'] = $auction['buyout'] / $auction['stackCount'];
 
                 //Get only i need
                 return array_intersect_key($auction, array_flip([
@@ -62,19 +62,26 @@ class GenerateFileController extends Controller
                     'buyout',
                 ]));
             })
-            ->groupBy('item')
-            ->map(function ($auctions) {
-                /**
-                 * m => Marker Value.
-                 * b => Min Buyout.
-                 * n => Number of auctions.
-                 */
-                return [
-                    'm' => $this->calculateMarketValue($auctions->pluck('buyout')),
-                    'b' => $auctions->min('buyout'),
-                    'n' => $auctions->count(),
-                ];
-            });
+                ->filter(function ($auction) {
+                    //Delete bid auctions
+                    return $auction['buyout'] > 0;
+                })
+                ->groupBy('item')
+                ->map(function ($auctions) {
+                    if ($auctions->firstWhere('buyout', 0)) {
+                        dd($auctions);
+                    }
+                    /*
+                     * m => Marker Value.
+                     * b => Min Buyout.
+                     * n => Number of auctions.
+                     */
+                    return [
+                        'm' => $this->calculateMarketValue($auctions->sortBy('buyout')->pluck('buyout')),
+                        'b' => $auctions->min('buyout'),
+                        'n' => $auctions->count(),
+                    ];
+                });
 
             //Get the current faction name
             $faction = [
@@ -99,7 +106,7 @@ class GenerateFileController extends Controller
     }
 
     /**
-     * Calculate the market value of a given values
+     * Calculate the market value of a given values.
      *
      * @param \Illuminate\Support\Collection $prices
      * @return int
@@ -110,7 +117,7 @@ class GenerateFileController extends Controller
         $price = 0;
         $passes = collect();
 
-        for ($i=0; $i < $prices->count(); $i++) {
+        for ($i = 0; $i < $prices->count(); $i++) {
             $previousPrice = $price;
             $price = $prices[$i];
 
@@ -135,12 +142,14 @@ class GenerateFileController extends Controller
      */
     public function deleteAtypical(Collection $prices)
     {
-        $average = $prices->sum()/$prices->count();
+        $average = $prices->sum() / $prices->count();
         $standardDeviation = $this->standardDeviation($prices->toArray());
         $standardDeviation *= 1.5;
+        $lowest = $average - $standardDeviation;
+        $highest = $average + $standardDeviation;
 
-        return collect($prices)->reject(function ($price) use ($average, $standardDeviation) {
-            return !(abs($price - $average) >= $standardDeviation);
+        return collect($prices)->filter(function ($price) use ($lowest, $highest) {
+            return $price >= $lowest && $price <= $highest;
         });
     }
 
@@ -158,7 +167,7 @@ class GenerateFileController extends Controller
         $variance = 0.0;
 
         // Calculating mean using array_sum() method
-        $average = array_sum($prices)/$numOfElements;
+        $average = array_sum($prices) / $numOfElements;
 
         foreach ($prices as $price) {
             // sum of squares of differences between
@@ -166,6 +175,6 @@ class GenerateFileController extends Controller
             $variance += pow(($price - $average), 2);
         }
 
-        return (float)sqrt($variance/$numOfElements);
+        return (float) sqrt($variance / $numOfElements);
     }
 }
