@@ -34,7 +34,7 @@ class CommunicateToTauri
         $ch = curl_init($this->baseurl . '?apikey=' . $this->apikey);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Armory Public API client');
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         // curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_POSTFIELDS, urlencode(json_encode($request)));
         $response = curl_exec($ch);
