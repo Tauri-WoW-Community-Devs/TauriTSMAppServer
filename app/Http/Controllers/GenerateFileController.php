@@ -44,7 +44,8 @@ class GenerateFileController extends Controller
     public function __invoke($data)
     {
         $auctionsByFaction = collect($data['response']['auctions']);
-        $lastModified = $data['response']['lastModified'];
+        // $lastModified = $data['response']['lastModified'];
+        $lastModified = \Carbon\Carbon::now()->timestamp;
 
         $array = $auctionsByFaction->mapWithKeys(function ($auctions, $faction) {
             // If neutral auction continue
@@ -54,7 +55,7 @@ class GenerateFileController extends Controller
 
             $data = collect($auctions)->map(function ($auction) {
                 //Price per item
-                $auction['buyout'] = $auction['buyout'] / $auction['stackCount'];
+                $auction['buyout'] = round($auction['buyout'] / $auction['stackCount']);
 
                 //Get only i need
                 return array_intersect_key($auction, array_flip([
