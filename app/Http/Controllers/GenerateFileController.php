@@ -103,7 +103,8 @@ class GenerateFileController extends Controller
 
         Storage::disk('public')->put('AppData.lua', $contents);
 
-        return 'done';
+        //For heroku purpose
+        Storage::disk('public_path')->put('AppData.lua', $contents);
     }
 
     /**
