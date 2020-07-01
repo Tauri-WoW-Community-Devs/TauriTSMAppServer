@@ -62,6 +62,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'addon_folder' => [
+            'driver' => 'local',
+            'root' => env('TAURI_WOW_PATH') . '/Interface/AddOns',
+            'url' => env('APP_URL'),
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

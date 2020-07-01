@@ -44,8 +44,6 @@ class GenerateFileController extends Controller
     public function __invoke($data)
     {
         $auctionsByFaction = collect($data['response']['auctions']);
-        // $lastModified = $data['response']['lastModified'];
-        $lastModified = \Carbon\Carbon::now()->timestamp;
 
         $array = $auctionsByFaction->mapWithKeys(function ($auctions, $faction) {
             // If neutral auction continue
@@ -93,18 +91,7 @@ class GenerateFileController extends Controller
             return [$faction => $data];
         })->filter();
 
-        $appData = '';
-
-        foreach ($this->servers as $server) {
-            $appData .= "[\"{$server}-Both-{$lastModified}\"] = '{$array->toJson()}',";
-        }
-
-        $contents = "-- This file is populated automatically by the TradeSkillMaster Application\n-- and should not be manually modified.\nlocal TSM = select(2, ...)\nTSM.AppData = {\n\t{$appData}\n}";
-
-        Storage::disk('public')->put('AppData.lua', $contents);
-
-        //For heroku purpose
-        Storage::disk('public_path')->put('AppData.lua', $contents);
+        $this->createFiles($array);
     }
 
     /**
@@ -178,5 +165,40 @@ class GenerateFileController extends Controller
         }
 
         return (float) sqrt($variance / $numOfElements);
+    }
+
+    /**
+     * Create a file
+     *
+     * @param \Illuminate\Support\Collection
+     * @return null
+     */
+    public function createFiles(Collection $array)
+    {
+        $appData = '';
+        $lastModified = \Carbon\Carbon::now()->timestamp;
+
+        foreach ($this->servers as $server) {
+            $appData .= "[\"{$server}-Both-{$lastModified}\"] = '{$array->toJson()}',";
+        }
+
+        $contents = "-- This file is populated automatically by the TradeSkillMaster Application\n";
+        $contents .= "-- and should not be manually modified.\n";
+        $contents .= "local TSM = select(2, ...)\n";
+        $contents .= "TSM.AppData = {\n\t{$appData}\n}\n";
+
+        Storage::disk('public')->put('AppData.lua', $contents);
+
+        //For heroku purpose
+        Storage::disk('public_path')->put('AppData.lua', $contents);
+
+        /**
+         * If you are in a local environment
+         * the file will be saved in the addon folder
+         * to automate processes
+         */
+        if (config('app.env') == 'local') {
+            Storage::disk('addon_folder')->put('TradeSkillMaster_AuctionDB/AppData.lua', $contents);
+        }
     }
 }
