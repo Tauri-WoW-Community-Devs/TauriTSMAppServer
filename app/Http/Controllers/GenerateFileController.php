@@ -189,9 +189,6 @@ class GenerateFileController extends Controller
 
         Storage::disk('public')->put('AppData.lua', $contents);
 
-        //For heroku purpose
-        Storage::disk('public_path')->put('AppData.lua', $contents);
-
         /**
          * If you are in a local environment
          * the file will be saved in the addon folder
