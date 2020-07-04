@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="links">
-                    <a href="AppData.lua" download>Download File</a>
+                    <a href="/downloadFile">Download File</a>
                 </div>
             </div>
         </div>

@@ -187,7 +187,9 @@ class GenerateFileController extends Controller
         $contents .= "local TSM = select(2, ...)\n";
         $contents .= "TSM.AppData = {\n\t{$appData}\n}\n";
 
-        Storage::disk('public')->put('AppData.lua', $contents);
+        if (config('app.env') == 'production') {
+            Storage::disk('b2')->put('AppData.lua', $contents);
+        }
 
         /**
          * If you are in a local environment
