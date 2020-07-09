@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('downloadFile', function () {
+    Artisan::call('get:auctions-info');
+
     return Storage::disk('b2')->download('AppData.lua');
 });

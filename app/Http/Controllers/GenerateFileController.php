@@ -91,7 +91,9 @@ class GenerateFileController extends Controller
             return [$faction => $data];
         })->filter();
 
-        $this->createFiles($array);
+        $lastModified = $data['response']['lastModified'];
+
+        $this->createFiles($array, $lastModified);
     }
 
     /**
@@ -171,12 +173,12 @@ class GenerateFileController extends Controller
      * Create a file
      *
      * @param \Illuminate\Support\Collection
+     * @param integer $lastModified
      * @return null
      */
-    public function createFiles(Collection $array)
+    public function createFiles(Collection $array, $lastModified)
     {
         $appData = '';
-        $lastModified = \Carbon\Carbon::now()->timestamp;
 
         foreach ($this->servers as $server) {
             $appData .= "[\"{$server}-Both-{$lastModified}\"] = '{$array->toJson()}',";
@@ -186,6 +188,8 @@ class GenerateFileController extends Controller
         $contents .= "-- and should not be manually modified.\n";
         $contents .= "local TSM = select(2, ...)\n";
         $contents .= "TSM.AppData = {\n\t{$appData}\n}\n";
+
+        Storage::disk('local')->put('lastModified', $lastModified);
 
         if (config('app.env') == 'production') {
             Storage::disk('b2')->put('AppData.lua', $contents);

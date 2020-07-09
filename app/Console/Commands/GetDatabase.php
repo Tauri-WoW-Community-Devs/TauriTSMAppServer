@@ -10,18 +10,6 @@ use Illuminate\Support\Facades\Storage;
 class GetDatabase extends Command
 {
     /**
-     * Params of the request
-     *
-     * @var array
-     */
-    protected $request = [
-        'url'    => 'auctions-data',
-        'params' => [
-            "r" => "[HU] Tauri WoW Server"
-        ]
-    ];
-
-    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -34,6 +22,25 @@ class GetDatabase extends Command
      * @var string
      */
     protected $description = 'Get the auction data from the tauri api';
+
+    /**
+     * Params of the request
+     *
+     * @var array
+     */
+    protected $request = [
+        'url'    => 'auctions-data',
+        'params' => [
+            "r" => "[HU] Tauri WoW Server"
+        ]
+    ];
+
+    /**
+     * Tauri service to communicate to the API.
+     *
+     * @var \App\Services\CommunicateToTauri
+     */
+    protected $tauri;
 
     /**
      * Create a new command instance.
