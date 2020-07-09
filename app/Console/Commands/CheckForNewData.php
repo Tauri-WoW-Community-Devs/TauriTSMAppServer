@@ -83,7 +83,7 @@ class CheckForNewData extends Command
             $auctionLastModified
         );
 
-        $lastHalfHour = Carbon::now()->subMinute(30);
+        $lastHalfHour = Carbon::now()->subMinutes(30);
 
         return $auctionLastModified->greaterThan($lastHalfHour);
     }
