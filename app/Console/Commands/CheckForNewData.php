@@ -83,9 +83,7 @@ class CheckForNewData extends Command
             $auctionLastModified
         );
 
-        $lastModified = Carbon::createFromTimestamp(
-            Storage::disk('local')->get('lastModified')
-        );
+        $lastModified = Carbon::now()->subMinute(15);
 
         return $auctionLastModified->greaterThan($lastModified);
     }
