@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Http\Controllers\GenerateFileController;
 use App\Services\CommunicateToTauri;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class GetDatabase extends Command
 {

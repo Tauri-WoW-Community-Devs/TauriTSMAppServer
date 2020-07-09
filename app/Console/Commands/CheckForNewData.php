@@ -6,7 +6,6 @@ use App\Services\CommunicateToTauri;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
 
 class CheckForNewData extends Command
 {
@@ -32,8 +31,8 @@ class CheckForNewData extends Command
     protected $request = [
         'url'    => 'auctions-info',
         'params' => [
-            'r' => '[HU] Tauri WoW Server',
-        ],
+            "r" => "[HU] Tauri WoW Server"
+        ]
     ];
 
     /**
@@ -73,9 +72,9 @@ class CheckForNewData extends Command
     }
 
     /**
-     * Determines if the auction has been updated
+     * Determines if the auction has been updated.
      *
-     * @param integer $auctionLastModified
+     * @param int $auctionLastModified
      */
     public function freshAuction($auctionLastModified)
     {
