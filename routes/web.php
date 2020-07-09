@@ -19,7 +19,5 @@ Route::get('/', function () {
 });
 
 Route::get('downloadFile', function () {
-    Artisan::call('get:auctions-info');
-
     return Storage::disk('b2')->download('AppData.lua');
 });
