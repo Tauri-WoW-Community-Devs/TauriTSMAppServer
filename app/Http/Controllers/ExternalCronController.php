@@ -6,7 +6,6 @@ use App\Scan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Storage;
 
 class ExternalCronController extends Controller
 {
