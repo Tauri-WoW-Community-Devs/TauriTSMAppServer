@@ -21,3 +21,5 @@ Route::get('/', function () {
 Route::get('downloadFile', function () {
     return Storage::disk('b2')->download('AppData.lua');
 });
+
+Route::get('cron', 'ExternalCronController');
