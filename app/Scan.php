@@ -12,4 +12,13 @@ class Scan extends Model
      * @var array
      */
     protected $fillable = ['name', 'last_scan_at'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'last_scan_at' => 'datetime',
+     ];
 }
