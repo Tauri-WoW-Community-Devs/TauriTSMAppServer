@@ -25,5 +25,5 @@ You can now find this file at `storage/app/public/AppData.lua`
 
 ## Contributing
 
-If you would like to contribute to this project it would be great if you would follow certain guidelines and standards that will help maintain a clean code. You can get an example of them [here](https://guidelines.spatie.be/code-style/laravel-php#general-php-rules)
+If you would like to contribute to this project it would be great if you would follow certain guidelines and standards that will help maintain a clean code. You can get an example of them [here](https://spatie.be/guidelines/laravel-php)
 There is also a `.php-cs`  file in the root of the project that can help format the code automatically with tools like php-cs.
