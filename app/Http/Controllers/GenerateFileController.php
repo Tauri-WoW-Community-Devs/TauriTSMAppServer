@@ -8,32 +8,10 @@ use Illuminate\Support\Facades\Storage;
 
 class GenerateFileController extends Controller
 {
-    /**
-     * Params of the request.
-     *
-     * @var array
-     */
-    protected $request = [
-        'url'    => 'auctions-data',
-        'params' => [
-            'r' => '[HU] Tauri WoW Server',
-        ],
-    ];
-
     protected $servers = [
         '[EN] Evermoon',
         '[HU] Tauri WoW Server',
     ];
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->tauri = new CommunicateToTauri();
-    }
 
     /**
      * Handle the incoming data.
@@ -51,25 +29,23 @@ class GenerateFileController extends Controller
                 return [];
             }
 
-            $data = collect($auctions)->map(function ($auction) {
-                //Price per item
-                $auction['buyout'] = round($auction['buyout'] / $auction['stackCount']);
+            $data = collect($auctions)
+                ->map(function ($auction) {
+                    //Price per item
+                    $auction['buyout'] = round($auction['buyout'] / $auction['stackCount']);
 
-                //Get only i need
-                return array_intersect_key($auction, array_flip([
-                    'item',
-                    'buyout',
-                ]));
-            })
+                    //Get only i need
+                    return array_intersect_key($auction, array_flip([
+                        'item',
+                        'buyout',
+                    ]));
+                })
                 ->filter(function ($auction) {
                     //Delete bid auctions
                     return $auction['buyout'] > 0;
                 })
                 ->groupBy('item')
                 ->map(function ($auctions) {
-                    if ($auctions->firstWhere('buyout', 0)) {
-                        dd($auctions);
-                    }
                     /*
                      * m => Marker Value.
                      * b => Min Buyout.
@@ -170,10 +146,10 @@ class GenerateFileController extends Controller
     }
 
     /**
-     * Create a file
+     * Create a file.
      *
      * @param \Illuminate\Support\Collection
-     * @param integer $lastModified
+     * @param int $lastModified
      * @return null
      */
     public function createFiles(Collection $array, $lastModified)
@@ -190,16 +166,16 @@ class GenerateFileController extends Controller
         $contents .= "TSM.AppData = {\n\t{$appData}\n}\n";
 
         if (config('app.env') == 'production') {
-            Storage::disk('b2')->put('AppData.lua', $contents);
+            Storage::disk('public')->put('AppData.lua', $contents);
         }
 
-        /**
+        /*
          * If you are in a local environment
          * the file will be saved in the addon folder
          * to automate processes
          */
-        if (config('app.env') == 'local') {
-            Storage::disk('addon_folder')->put('TradeSkillMaster_AuctionDB/AppData.lua', $contents);
-        }
+        // if (config('app.env') == 'local') {
+        //     Storage::disk('addon_folder')->put('TradeSkillMaster_AuctionDB/AppData.lua', $contents);
+        // }
     }
 }

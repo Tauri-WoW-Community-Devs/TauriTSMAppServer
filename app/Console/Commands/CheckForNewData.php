@@ -6,6 +6,7 @@ use App\Services\CommunicateToTauri;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 class CheckForNewData extends Command
 {
@@ -66,7 +67,7 @@ class CheckForNewData extends Command
             return;
         }
 
-        if ($this->freshAuction($data['response']['lastModified'])) {
+        if ($this->newAuctionsAvailable($data['response']['lastModified'])) {
             Artisan::call('get:auctions-data');
         }
     }
@@ -76,14 +77,20 @@ class CheckForNewData extends Command
      *
      * @param int $auctionLastModified
      */
-    public function freshAuction($auctionLastModified)
+    public function newAuctionsAvailable($auctionLastModified)
     {
+        if (! Storage::disk('public')->exists('AppData.lua')) {
+            return true;
+        }
+
         $auctionLastModified = Carbon::createFromTimestamp(
             $auctionLastModified
         );
 
-        $lastHalfHour = Carbon::now()->subMinutes(30);
+        $fileLastModified = Carbon::createFromTimestamp(
+            Storage::disk('public')->lastModified('AppData.lua')
+        );
 
-        return $auctionLastModified->greaterThan($lastHalfHour);
+        return $auctionLastModified->greaterThan($fileLastModified);
     }
 }

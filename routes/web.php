@@ -17,9 +17,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('downloadFile', function () {
-    return Storage::disk('b2')->download('AppData.lua');
-});
-
-Route::get('cron', 'ExternalCronController');
